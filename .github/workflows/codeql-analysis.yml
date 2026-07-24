@@ -2,9 +2,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
   pull_request:
-    branches: [main]
+    branches: [ "main" ]
   schedule:
     - cron: '0 0 * * 1'
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
       languages:
         description: 'Languages to analyze'
         required: true
-        default: 'kotlin'
+        default: 'java-kotlin'
 
 jobs:
   analyze:
@@ -22,20 +22,23 @@ jobs:
       contents: write
       security-events: write
       actions: write
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: "kotlin"
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ github.event.inputs.languages || 'java-kotlin' }}
+          build-mode: autobuild
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:kotlin"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ github.event.inputs.languages || 'java-kotlin' }}"
