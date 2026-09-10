@@ -26,3 +26,7 @@ data class User(
     val description: String? = null,
     @Id val id: Long? = null
 )
+
+data class MediaEntry(val slug: String, val resource: String)
+
+data class SessionEnvelope(val login: String, val blob: String)
